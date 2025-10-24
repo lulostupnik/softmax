@@ -1,0 +1,15 @@
+
+#Deprecated:
+
+build/RISCV/gem5.opt -d m5out/sm_float32 configs/deprecated/example/se.py \
+  -c src/softmax/bin/sm_float32.riscv
+
+
+build/RISCV/gem5.opt -d m5out/sm_int configs/deprecated/example/se.py \
+  -c src/softmax/bin/sm_all_int_lut.riscv
+
+
+
+#Con los config python files:
+
+./run_helper.py bin/sm_float32.riscv
