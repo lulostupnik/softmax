@@ -34,6 +34,6 @@ BASE_NAME=$(basename "$SRC_FILE" .c)
 OUT_FILE="$OUT_DIR/$BASE_NAME.riscv"
 
 echo "Compiling $SRC_FILE -> $OUT_FILE ..."
-"$CC" "$SRC_FILE" -static -o "$OUT_FILE" 
+"$CC" "$SRC_FILE" -static -o "$OUT_FILE"
 
 echo "Done. Output: $OUT_FILE"

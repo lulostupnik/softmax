@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -97,4 +97,3 @@ int main(void) {
     printf("\nSum = %d\n", sum);
     return 0;
 }
-
