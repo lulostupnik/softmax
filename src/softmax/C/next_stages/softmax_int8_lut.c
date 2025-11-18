@@ -24,7 +24,7 @@ static inline uint8_t frac_KB(uint8_t delta)   { return (uint8_t)(delta & ((1u<<
 /**
  * Compute denominator (sum of exp(x[i] - max)) and max value in one pass.
  * Uses online algorithm to avoid overflow by tracking running maximum.
- * 
+ *
  * @param x Input array in Q0.7 fixed-point (range: -128 to 127)
  * @param n Number of elements
  * @param sum_q7_out Output: denominator sum in Q0.7 format
@@ -39,7 +39,7 @@ static void denom_and_max_online_q7_optB(const int8_t *x, int n,
 
     for (int i = 1; i < n; ++i) {
         int8_t xi = x[i];
-    
+
         if (xi <= m) {
             // Current element is not the new max
             // Compute exp(xi - m) and add to sum
@@ -47,7 +47,7 @@ static void denom_and_max_online_q7_optB(const int8_t *x, int n,
             uint8_t b = bucket_KB(d);             // coarse bucket (d / 32)
             uint8_t f = frac_KB(d);               // fine fraction (d % 32)
             uint16_t lut = LUT_Q15_2P_MINUS_F_OVER_32[f]; // lookup 2^(-f/32)
-            
+
             // Compute 2^(-d) ≈ 2^(-b) * 2^(-f/32)
             uint32_t term = ((uint32_t)(ONE_Q7 >> b) * (uint32_t)lut);
             term = (term + (1u<<14)) >> 15; // Round and convert Q15 back to Q0.7
@@ -58,7 +58,7 @@ static void denom_and_max_online_q7_optB(const int8_t *x, int n,
             uint8_t b = bucket_KB(d);
             uint8_t f = frac_KB(d);
             uint16_t lut = LUT_Q15_2P_MINUS_F_OVER_32[f];
-            
+
             // Rescale existing sum: s_new = s_old * exp(old_max - new_max)
             uint32_t scaled = ((uint32_t)(s >> b) * (uint32_t)lut);
             s = (uint16_t)((scaled + (1u<<14)) >> 15); // rescale old sum in Q0.7
@@ -74,7 +74,7 @@ static void denom_and_max_online_q7_optB(const int8_t *x, int n,
  * Compute softmax using integer arithmetic with lookup table optimization.
  * softmax(x)[i] = exp(x[i]) / sum(exp(x[j]))
  *               = exp(x[i] - max) / sum(exp(x[j] - max))
- * 
+ *
  * @param x Input array in Q0.7 fixed-point format
  * @param n Number of elements
  * @param y Output array in Q0.7 fixed-point format (range: 0 to 127)
@@ -107,10 +107,9 @@ void softmax_int8_optionB(const int8_t *x, int n, int8_t *y)
         // Divide by sum using precomputed reciprocal
         uint32_t t = (uint32_t)inv_q15 * (uint32_t)num_q7;        // Q15*Q7
         uint16_t q = (uint16_t)((t + (1u<<14)) >> 15);            // -> Q0.7
-        
+
         // Clamp to valid range [0, 127]
         if (q > 127) q = 127;
         y[i] = (int8_t)q;
     }
 }
-

@@ -1,15 +1,15 @@
 #include "../include/softmax.h"
 
-#define K_A 5  
+#define K_A 5
 
 //compile this impl in gem5
-//see the asm code and see instructions used. 
+//see the asm code and see instructions used.
 //target some bottleneck by doing the instructions.
 //do the algo with regular instructions + custom
 
 
 static inline uint8_t bucket_round_KA(uint8_t delta) {
-    return (uint8_t)((delta + (1u << (K_A - 1))) >> K_A); 
+    return (uint8_t)((delta + (1u << (K_A - 1))) >> K_A);
 }
 
 
@@ -47,7 +47,7 @@ void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
     denom_and_max_online_q7_optA(x, n, &sum_q7, &m);
 
     // inv_q15 ≈ (127 / sum_q7) in Q15 (one 32-bit div per row)
-    uint16_t inv_q15 = (uint16_t)(((uint32_t)127u << 15) / (sum_q7 ? sum_q7 : 1)); 
+    uint16_t inv_q15 = (uint16_t)(((uint32_t)127u << 15) / (sum_q7 ? sum_q7 : 1));
 
     for (int i = 0; i < n; ++i) {
         uint8_t d = (uint8_t)(m - x[i]);
