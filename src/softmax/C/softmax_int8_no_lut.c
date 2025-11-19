@@ -62,7 +62,7 @@ void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
 
 #include <stdio.h>
 
-#define N 1000000000
+#define N 1000000
 #define PRINT_LEN 20
 
 int main() {
