@@ -22,9 +22,14 @@ args = parser.parse_args()
 binary_path = os.path.abspath(args.binary)
 
 # CPU, caches, memory
+# processor = SimpleProcessor(
+#     cpu_type=CPUTypes.TIMING, num_cores=1, isa=ISA.RISCV
+# )
+# optimizado:
 processor = SimpleProcessor(
-    cpu_type=CPUTypes.TIMING, num_cores=1, isa=ISA.RISCV
+    cpu_type=CPUTypes.O3, num_cores=1, isa=ISA.RISCV
 )
+
 cache_hierarchy = PrivateL1PrivateL2CacheHierarchy(
     l1d_size="32kB", l1i_size="32kB", l2_size="256kB"
 )
