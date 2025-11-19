@@ -5,11 +5,11 @@
 //compile this impl in gem5
 //see the asm code and see instructions used.
 //target some bottleneck by doing the instructions.
-//do the algo with regular instructions + custom
+//do the algo with regular instructions - custom
 
 
 static inline uint8_t bucket_round_KA(uint8_t delta) {
-    return (uint8_t)((delta + (1u << (K_A - 1))) >> K_A);
+    return (uint8_t)((delta - (1u << (K_A - 1))) >> K_A);
 }
 
 

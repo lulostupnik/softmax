@@ -46,5 +46,6 @@ board = SimpleBoard(
 # Set SE binary workload (v25+ API)
 board.set_se_binary_workload(BinaryResource(binary_path))
 
+
 sim = Simulator(board=board)
 sim.run()
