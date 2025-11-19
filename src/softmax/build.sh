@@ -36,8 +36,13 @@ mkdir -p "$OUT_DIR"
 
 BASE_NAME=$(basename "$1" .c)
 OUT_FILE="$OUT_DIR/$BASE_NAME.riscv"
+DUMP_FILE="$OUT_DIR/$BASE_NAME.dump"
 
 echo "Compiling $@ -> $OUT_FILE ..."
-"$CC" "$@" -static -o "$OUT_FILE"
+"$CC" "$@" -static -O3 -march=rv64gc -o "$OUT_FILE"
+
+echo "Generating objdump -> $DUMP_FILE ..."
+riscv64-linux-gnu-objdump -d "$OUT_FILE" > "$DUMP_FILE"
 
 echo "Done. Output: $OUT_FILE"
+echo "      Objdump: $DUMP_FILE"

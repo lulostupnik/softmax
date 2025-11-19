@@ -14,7 +14,7 @@ static inline uint8_t bucket_round_KA(uint8_t delta) {
 
 
 // Online denominator in Q0.7 + running max, pure shifts/adds.
-static void denom_and_max_online_q7_optA(const int8_t *x, int n,
+static inline void denom_and_max_online_q7_optA(const int8_t *x, int n,
                                          uint16_t *sum_q7_out, int8_t *max_out)
 {
     int8_t m = x[0];
@@ -62,21 +62,31 @@ void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
 
 #include <stdio.h>
 
-int main() {
-    int8_t input[] = {10, 20, 30, 40, 50};
-    int8_t output[5];
-    int n = 5;
+#define N 1000000000
+#define PRINT_LEN 20
 
-    printf("Input: ");
-    for (int i = 0; i < n; i++) {
+int main() {
+    int8_t input[N]; // = {10, 20, 30, 40, 50};
+    int8_t output[N];
+
+    for
+
+    printf("Input %d", N);
+    for (int i = 0; i < N; i++) {
+        input[i] = i%2 ? -(i%127):(i % 127)
+
+    }
+
+    for (int i = 0; i < PRINT_LEN; i++) {
         printf("%d ", input[i]);
     }
+
     printf("\n");
 
     softmax_int8_optionA(input, n, output);
 
     printf("Output: ");
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < PRINT_LEN; i++) {
         printf("%d ", output[i]);
     }
     printf("\n");
