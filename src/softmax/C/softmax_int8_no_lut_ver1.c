@@ -95,7 +95,7 @@ int main() {
     // int8_t input[N]; // = {10, 20, 30, 40, 50};
     int8_t output[N];
 
-    
+
     // printf("Input %d", N);
     // for (int i = 0; i < N; i++) {
     //     input[i] = i%2 ? -(i%127):(i % 127);

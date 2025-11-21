@@ -8,8 +8,8 @@ if len(sys.argv) > 1:
     LOG_FILE = sys.argv[1]
 
 # Regex para mnemonic y OpClass
-mnemonic_re = re.compile(r'@\S+\s+:\s+([a-z0-9_.]+)\s')
-opclass_re = re.compile(r':\s+([A-Za-z]+)\s*:')
+mnemonic_re = re.compile(r"@\S+\s+:\s+([a-z0-9_.]+)\s")
+opclass_re = re.compile(r":\s+([A-Za-z]+)\s*:")
 
 mnemonic_hist = Counter()
 opclass_hist = Counter()
@@ -26,17 +26,30 @@ other_int_alu = 0
 
 # Listas de mnemonics por categoría
 branch_mnems = {
-    "beq", "bne", "blt", "bge", "bltu", "bgeu",
-    "jal", "jalr", "c_beqz", "c_bnez", "c_j", "c_jal",
+    "beq",
+    "bne",
+    "blt",
+    "bge",
+    "bltu",
+    "bgeu",
+    "jal",
+    "jalr",
+    "c_beqz",
+    "c_bnez",
+    "c_j",
+    "c_jal",
 }
 
 move_mnems = {
-    "mv", "c_mv",
+    "mv",
+    "c_mv",
 }
+
 
 def is_add_like(mn):
     # suma/resta, incluyendo comprimidas
     return mn.startswith(("add", "sub", "c_add"))
+
 
 def is_shift_like(mn):
     # shifts normales y comprimidos
@@ -46,6 +59,7 @@ def is_shift_like(mn):
         return True
     return False
 
+
 def is_logic_like(mn):
     # AND/OR/XOR y variantes inmediatas (incl. comprimidas)
     if mn.startswith(("and", "or", "xor")):
@@ -54,11 +68,14 @@ def is_logic_like(mn):
         return True
     return False
 
+
 def is_branch_like(mn):
     return mn in branch_mnems
 
+
 def is_move_like(mn):
     return mn in move_mnems
+
 
 def is_compare_like(mn):
     # slt, sltu, slti, sltiu, etc.

@@ -16,5 +16,3 @@ OUT_DIR="m5out/$(basename "$BIN_PATH" .riscv)"
 mkdir -p "$OUT_DIR"
 
 /work/build/RISCV/gem5.opt -d "$OUT_DIR" --debug-flags=Exec --debug-file=exec.log /work/src/softmax/run_config.py --binary "$BIN_PATH"
-
-

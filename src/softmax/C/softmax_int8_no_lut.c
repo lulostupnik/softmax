@@ -1,15 +1,22 @@
 #include "../include/softmax.h"
 
 #define K_A 5
+#define SHIFT_BUCK 16
+
 
 //compile this impl in gem5
 //see the asm code and see instructions used.
 //target some bottleneck by doing the instructions.
 //do the algo with regular instructions + custom
 
-
+/*
 static inline uint8_t bucket_round_KA(uint8_t delta) {
     return (uint8_t)((delta + (1u << (K_A - 1))) >> K_A);
+}*/
+
+
+static inline uint8_t bucket_round_KA(uint8_t delta) {
+    return (uint8_t)((delta + SHIFT_BUCK) >> K_A);
 }
 
 
@@ -24,11 +31,11 @@ static inline void denom_and_max_online_q7_optA(const int8_t *x, int n,
         int8_t xi = x[i];
         if (xi <= m) {
             uint8_t d = (uint8_t)(m - xi);
-            uint8_t bucket = bucket_round_KA(d);
+            uint8_t bucket = (uint8_t)((delta + SHIFT_BUCK) >> K_A);
             s += (ONE_Q7 >> bucket);
         } else {
             uint8_t d = (uint8_t)(xi - m);
-            uint8_t bucket = bucket_round_KA(d);
+            uint8_t bucket =(uint8_t)((delta + SHIFT_BUCK) >> K_A);
             s = (s >> bucket) + ONE_Q7;
             m = xi;
         }
