@@ -31,11 +31,11 @@ static inline void denom_and_max_online_q7_optA(const int8_t *x, int n,
         int8_t xi = x[i];
         if (xi <= m) {
             uint8_t d = (uint8_t)(m - xi);
-            uint8_t bucket = (uint8_t)((delta + SHIFT_BUCK) >> K_A);
+            uint8_t bucket = bucket_round_KA(d);
             s += (ONE_Q7 >> bucket);
         } else {
             uint8_t d = (uint8_t)(xi - m);
-            uint8_t bucket =(uint8_t)((delta + SHIFT_BUCK) >> K_A);
+            uint8_t bucket = bucket_round_KA(d);
             s = (s >> bucket) + ONE_Q7;
             m = xi;
         }
@@ -43,6 +43,7 @@ static inline void denom_and_max_online_q7_optA(const int8_t *x, int n,
     *sum_q7_out = s;
     *max_out    = m;
 }
+
 
 // Integer-only softmax using Option A; outputs Q0.7 [0..127].
 void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
