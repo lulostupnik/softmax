@@ -44,6 +44,7 @@ class OpClass(Enum):
     vals = [
         "No_OpClass",
         "IntAlu",
+        "DMUpdateOp",
         "IntMult",
         "IntDiv",
         "FloatAdd",

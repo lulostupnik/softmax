@@ -1333,6 +1333,53 @@ decode QUADRANT default Unknown::unknown() {
             }
         }
 
+
+
+        // CUSTOM OPCODE SOFTMAX
+               0x02: decode FUNCT3 {
+            format ROp {
+                0x0: decode FUNCT7 {
+                    0x00: dm_update({{
+                        // --- Constants ---
+                        const int K_A = 5;
+                        const int ONE_Q7 = 128;
+
+                        // --- Unpack Inputs ---
+                        uint16_t s = (uint16_t)bits(Rs1, 15, 0);
+                        int8_t m = (int8_t)bits(Rs1, 23, 16);
+                        
+                        int8_t xi = (int8_t)bits(Rs2, 7, 0);
+
+                        // --- Parallel Computation (Hardware Logic) ---
+                        // Path A: xi <= m
+                        uint8_t d_case1 = (uint8_t)(m - xi);
+                        uint8_t round_val = (1 << (K_A - 1));
+                        uint8_t b_case1 = (d_case1 + round_val) >> K_A;
+                        uint16_t s_case1 = s + (ONE_Q7 >> b_case1);
+
+                        // Path B: xi > m
+                        uint8_t d_case2 = (uint8_t)(xi - m);
+                        uint8_t b_case2 = (d_case2 + round_val) >> K_A;
+                        uint16_t s_case2 = (s >> b_case2) + ONE_Q7;
+
+                        // --- MUX Selection ---
+                        bool update_max = (xi > m);
+
+                        uint16_t final_s = update_max ? s_case2 : s_case1;
+                        int8_t final_m   = update_max ? xi : m;
+
+                        // --- Pack Output ---
+                        // Rd: Bits 0-15 = new_sum, Bits 16-23 = new_max
+                        uint64_t result = (uint64_t)final_s;
+                        result |= ((uint64_t)((uint8_t)final_m) << 16);
+
+                        Rd = result;
+                    }}, DMUpdateOp);
+                }
+            }
+        }
+
+
         0x03: decode FUNCT3 {
             format FenceOp {
                 0x0: fence({{

@@ -62,4 +62,5 @@ class DefaultFUPool(FUPool):
         WritePort(),
         RdWrPort(),
         IprPort(),
+        DMUpdateALU()
     ]
