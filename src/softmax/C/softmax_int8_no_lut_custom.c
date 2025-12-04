@@ -20,35 +20,120 @@ static inline uint8_t bucket_round_KA(uint8_t delta) {
 }
 
 
-#define DM_UPDATE(rd, rs1, rs2) \
-    asm volatile(".insn r 0x0B, 0, 0, %0, %1, %2" : "=r"(rd) : "r"(rs1), "r"(rs2))
+#ifndef ONE_Q7
+#define ONE_Q7 128
+#endif
 
+// ---------------------------------------------------------------------
+// New DM_UPDATE macro (same opcode/funct3/funct7 as before):
+//   - rd: 32-bit destination (updated state in low 24 bits)
+//   - rs1: state + count
+//   - rs2: 4x int8 lanes
+// ---------------------------------------------------------------------
+#define DM_UPDATE(rd, rs1, rs2)                                        \
+    asm volatile (".insn r 0x0B, 0, 0, %0, %1, %2"                     \
+                  : "=r"(rd)                                           \
+                  : "r"(rs1), "r"(rs2))
+
+
+// ---------------------------------------------------------------------
+// Helper: pack persistent state (s, m) into low 24 bits of a uint32_t.
+// Layout (low 24 bits):
+//   bits [15:0]  = s (uint16_t)
+//   bits [23:16] = m (int8_t stored as uint8_t)
+//   bits [31:24] = 0 (per-call count will be OR'ed in on each use)
+// ---------------------------------------------------------------------
+static inline uint32_t
+pack_state(uint16_t s, int8_t m)
+{
+    uint32_t state = (uint32_t)s;                     // [15:0] = s
+    state |= ((uint32_t)(uint8_t)m) << 16;           // [23:16] = m
+    // [31:24] left as 0; will hold 'count' only when issuing the insn
+    return state;
+}
+
+// ---------------------------------------------------------------------
+// 4-wide version of denom_and_max_online_custom
+//
+// Numerical behavior:
+//   Exactly equivalent to your original scalar loop:
+//
+//     m = x[0]; s = ONE_Q7;
+//     for (i = 1; i < n; ++i) { dm_update(s,m,x[i]); }
+//
+// but implemented with a 4-wide custom instruction that processes
+// 1..4 elements per call.
+// ---------------------------------------------------------------------
 void denom_and_max_online_custom(const int8_t *x, int n,
                                  uint16_t *sum_q7_out, int8_t *max_out)
 {
-    if (n <= 0) return;
-
-    int8_t m = x[0];
-    uint16_t s = ONE_Q7;
-
-    // 1. PACKING: Combine 'm' (max) and 's' (sum) into one 64-bit register
-    // Format: [ ...unused... | m (8 bits) | s (16 bits) ]
-    uint64_t packed_state = ((uint64_t)((uint8_t)m) << 16) | s;
-
-    // 2. LOOP: Pure register operations, no memory stores inside loop
-    for (int i = 1; i < n; ++i) {
-        int8_t xi = x[i];
-
-        // Execute custom instruction
-        // packed_state = dm_update(packed_state, xi)
-        DM_UPDATE(packed_state, packed_state, xi);
+    if (n <= 0) {
+        // Same early-exit behavior as your original code.
+        return;
     }
 
-    // 3. UNPACKING: Extract results
-    *sum_q7_out = (uint16_t)(packed_state & 0xFFFF);
-    *max_out    = (int8_t)((packed_state >> 16) & 0xFF);
-}
+    // Initial state: first element sets the max, sum = ONE_Q7
+    int8_t   m = x[0];
+    uint16_t s = ONE_Q7;
 
+    // Persistent state lives in low 24 bits of this uint32_t
+    uint32_t state = pack_state(s, m);
+
+    int i = 1;  // we already consumed x[0]
+    while (i < n) {
+        int remaining = n - i;
+
+        // Number of elements to process in this instruction: 1..4
+        uint8_t count = (remaining >= 4) ? 4 : (uint8_t)remaining;
+
+        // ---------------------------------------------------------
+        // Pack up to 4 int8_t elements into Rs2:
+        //   bits [7:0]   = x[i + 0]
+        //   bits [15:8]  = x[i + 1] (if count > 1)
+        //   bits [23:16] = x[i + 2] (if count > 2)
+        //   bits [31:24] = x[i + 3] (if count > 3)
+        // Unused lanes can contain anything; they are ignored since
+        // 'count' tells the instruction how many to process.
+        // ---------------------------------------------------------
+        uint32_t vec = 0;
+        if (count >= 1) vec |= (uint32_t)(uint8_t)x[i + 0] << 0;
+        if (count >= 2) vec |= (uint32_t)(uint8_t)x[i + 1] << 8;
+        if (count >= 3) vec |= (uint32_t)(uint8_t)x[i + 2] << 16;
+        if (count >= 4) vec |= (uint32_t)(uint8_t)x[i + 3] << 24;
+
+        // ---------------------------------------------------------
+        // Build Rs1: current state + per-call count
+        //
+        // Rs1 layout at issue time:
+        //   [15:0]  = s (current denominator, Q0.7)
+        //   [23:16] = m (current max, int8)
+        //   [31:24] = count (1..4)
+        //
+        // The instruction will ignore the count for the next calls;
+        // software overwrites it each time anyway.
+        // ---------------------------------------------------------
+        uint32_t rs1 = state | ((uint32_t)count << 24);
+
+        // Issue the custom instruction
+        uint32_t rd;
+        DM_UPDATE(rd, rs1, vec);
+
+        // rd contains the updated state in low 24 bits:
+        //   [15:0]  = new s
+        //   [23:16] = new m
+        //   [31:24] = 0 / don't-care
+        state = rd & 0x00FFFFFFu;
+
+        i += count;
+    }
+
+    // Unpack final state
+    uint16_t final_s = (uint16_t)(state & 0xFFFFu);
+    int8_t   final_m = (int8_t)((state >> 16) & 0xFFu);
+
+    *sum_q7_out = final_s;
+    *max_out    = final_m;
+}
 
 // Integer-only softmax using Option A; outputs Q0.7 [0..127].
 void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
