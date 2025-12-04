@@ -88,8 +88,8 @@ static void write_results_to_file(const char *filename, const int8_t *output, in
 
     fclose(fp);
     printf("Results written to %s\n", filename);
-}*/
-
+}
+*/
 
 int main() {
     // int8_t input[N]; // = {10, 20, 30, 40, 50};

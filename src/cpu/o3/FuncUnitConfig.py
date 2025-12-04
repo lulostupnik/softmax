@@ -58,7 +58,7 @@ class IntMultDiv(FUDesc):
 
 
 class DMUpdateALU(FUDesc):
-    opList = [ OpDesc(opClass='DMUpdateOp', opLat=1, pipelined=True) ]    
+    opList = [ OpDesc(opClass='DMUpdateOp', opLat=3, pipelined=True) ]    
     count = 1
 
 class FP_ALU(FUDesc):
