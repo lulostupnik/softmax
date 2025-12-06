@@ -1,0 +1,48 @@
+==== OpClass counts ====
+IntAlu           169838   (69.53%)
+MemRead           51915   (21.25%)
+MemWrite          21440   ( 8.78%)
+IntMult            1028   ( 0.42%)
+ecall                12   ( 0.00%)
+FloatMemWrite         12   ( 0.00%)
+IntDiv                4   ( 0.00%)
+
+==== IntAlu breakdown (detailed) ====
+TOTAL IntAlu     : 169838
+  ADD-like       : 60229
+  SHIFT-like     : 25979
+  LOGIC          : 14816
+  BRANCH         : 32124
+  MOVE           : 19624
+  COMPARE        : 17
+  OTHER          : 17049
+
+  %ADD           : 35.46%
+  %SHIFT         : 15.30%
+  %LOGIC         :  8.72%
+  %BRANCH        : 18.91%
+  %MOVE          : 11.55%
+  %COMPARE       :  0.01%
+  %OTHER         : 10.04%
+
+==== Top 20 mnemonics ====
+c_addiw      23274
+c_mv         19624
+lbu          18375
+lw           12047
+addi         11657
+andi         10300
+c_add        10171
+ld           9457
+sb           8220
+c_slli       8188
+sraiw        6855
+c_jr         5678
+c_li         5569
+lhu          5135
+blt          4959
+slliw        4842
+bne          4627
+beq          4595
+c_addi       4301
+jal          3945
