@@ -13,6 +13,7 @@ from gem5.isas import ISA
 from gem5.resources.resource import BinaryResource
 from gem5.simulate.simulator import Simulator
 
+
 parser = argparse.ArgumentParser(
     description="Run a RISC-V binary in gem5 SE mode."
 )
@@ -39,7 +40,7 @@ board = SimpleBoard(
     processor=processor,
     memory=memory,
     cache_hierarchy=cache_hierarchy,
-)
+    )
 
 # Set SE binary workload (v25+ API)
 board.set_se_binary_workload(BinaryResource(binary_path))

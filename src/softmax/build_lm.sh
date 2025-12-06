@@ -33,6 +33,9 @@ fi
 
 OUT_DIR="./bin"
 CC="riscv64-linux-gnu-gcc"
+# CC="riscv32-unknown-elf-gcc"
+
+
 
 if ! command -v "$CC" >/dev/null 2>&1; then
   echo "ERROR: '$CC' not found in PATH."
