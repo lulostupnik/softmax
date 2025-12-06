@@ -1437,14 +1437,15 @@ decode QUADRANT default Unknown::unknown() {
 
                         // Helper lambda conceptually; gem5 ISA can't have real lambdas,
                         // but we inline this pattern for each lane.
+
                         auto contrib_from_x = [&](int8_t xi) -> uint16_t {
-                            // If lane was invalid (NEG_INF), its contribution
-                            // will be effectively zero due to huge diff.
-                            uint8_t d = (uint8_t)(new_m - xi);
-                            uint8_t b = (d + round_val) >> K_A;
-                            uint16_t term = (uint16_t)(ONE_Q7 >> b);
-                            return term;
+                            // Work in 16 bits to avoid overflow
+                            uint16_t d   = (int16_t)new_m - (int16_t)xi;
+                            uint16_t tmp = d + round_val;   // 0..271 for your ranges
+                            uint16_t b   = tmp >> K_A;      // 0..~8
+                            return (uint16_t)(ONE_Q7 >> b); // large diff → big b → term → 0
                         };
+
 
                         // Compute contributions per lane
                         uint16_t c0 = 0;

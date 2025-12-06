@@ -16,8 +16,14 @@ static inline uint8_t bucket_round_KA(uint8_t delta) {
 
 
 static inline uint8_t bucket_round_KA(uint8_t delta) {
-    return (uint8_t)((delta + SHIFT_BUCK) >> K_A);
+    uint16_t tmp = (uint16_t)delta + (uint16_t)SHIFT_BUCK;  // 0..271
+    uint16_t b   = tmp >> K_A;                              // up to ~8
+    
+    return (uint8_t)b;  
+    //return (uint8_t)((delta + SHIFT_BUCK) >> K_A);
 }
+
+
 
 
 // Online denominator in Q0.7 + running max, pure shifts/adds.
