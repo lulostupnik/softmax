@@ -18,8 +18,7 @@
 #endif
 
 
-void softmax_int8_optionA(const int8_t *x, int n, int8_t *y);
-void softmax_int8_optionB(const int8_t *x, int n, int8_t *y);
+void softmax_int8(const int8_t *x, int n, int8_t *y);
 
 
 

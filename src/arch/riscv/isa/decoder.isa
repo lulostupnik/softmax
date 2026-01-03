@@ -1376,19 +1376,19 @@ decode QUADRANT default Unknown::unknown() {
                             }
                         };
 
-   
+
                         if (count >= 1) process_elem(x0);
                         if (count >= 2) process_elem(x1);
                         if (count >= 3) process_elem(x2);
                         if (count >= 4) process_elem(x3);
 
                         // ====================================================
-                        // 2) Pack back 
+                        // 2) Pack back
                         // ====================================================
                         uint32_t result32 = (uint32_t)s;
                         result32 |= ((uint32_t)(uint8_t)m << 16);
                         Rd = (uint64_t)result32;
-                        
+
                     }}, DMUpdateOp);
                 }
             }
