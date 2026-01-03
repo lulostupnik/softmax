@@ -141,7 +141,7 @@ void softmax_int8(const int8_t *x, int n, int8_t *y)
         uint16_t num_q7 = (ONE_Q7 >> bucket);              // 2^{-bucket} in Q0.7
         uint32_t t = (uint32_t)inv_q15 * (uint32_t)num_q7; // Q15 * Q7 -> Q22
         uint16_t q = (uint16_t)((t + (1u<<14)) >> 15);     // -> Q7 with rounding
-        if (q > 127) q = 127;
+        if (q > ONE_Q7) q = ONE_Q7;
         y[i] = (int8_t)q;
     }
 }
