@@ -12,9 +12,6 @@
 #define LOG2_B 3
 #define ONE_Q7 ((uint16_t)128u)   // 1.0 in Q0.7
 
-// Uncomment to enable optional survivor clipping after quantization
-// #define ITA_CLIP_SURVIVORS 1
-
 // ===================== ITA epsilon quantizer =====================
 #ifndef LOG2E
 #define LOG2E 1.4426950408889634074  // log2(e)

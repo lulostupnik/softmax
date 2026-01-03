@@ -4,15 +4,6 @@
 #define SHIFT_BUCK 16
 
 
-//compile this impl in gem5
-//see the asm code and see instructions used.
-//target some bottleneck by doing the instructions.
-//do the algo with regular instructions + custom
-
-/*
-static inline uint8_t bucket_round_KA(uint8_t delta) {
-    return (uint8_t)((delta + (1u << (K_A - 1))) >> K_A);
-}*/
 
 
 static inline uint8_t bucket_round_KA(uint8_t delta) {
@@ -76,7 +67,6 @@ void softmax_int8_optionA(const int8_t *x, int n, int8_t *y)
 #include <stdio.h>
 
 #define N 8192
-// #define N 1024
 #define PRINT_LEN N
 
 
