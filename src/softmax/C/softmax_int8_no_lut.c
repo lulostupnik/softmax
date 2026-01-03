@@ -20,7 +20,6 @@ static inline uint8_t bucket_round_KA(uint8_t delta) {
     uint16_t b   = tmp >> K_A;                              // up to ~8
 
     return (uint8_t)b;
-    //return (uint8_t)((delta + SHIFT_BUCK) >> K_A);
 }
 
 
