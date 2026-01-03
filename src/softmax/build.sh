@@ -6,11 +6,11 @@ set -euo pipefail
 #
 # Example:
 #   ./build.sh C/sm_all_int_lut.c
-#   ./build.sh C/softmax_int8_no_lut.c C/main.c
+#   ./build.sh C/softmax_int8.c C/main.c
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <path_to_c_file> [additional_c_files...]"
-  echo "Example: $0 C/softmax_int8_no_lut.c C/main.c"
+  echo "Example: $0 C/softmax_int8.c C/main.c"
   exit 1
 fi
 

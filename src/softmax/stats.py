@@ -3,7 +3,7 @@ import re
 import sys
 from collections import Counter
 
-LOG_FILE = "./m5out/softmax_int8_no_lut/exec.log"
+LOG_FILE = "./m5out/softmax_int8/exec.log"
 if len(sys.argv) > 1:
     LOG_FILE = sys.argv[1]
 
