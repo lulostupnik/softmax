@@ -3,6 +3,7 @@
 
 [Español](#español) · [English](#english)
 
+**Report:** [Executive summary (PDF, 6 pages)](src/softmax/report.pdf)  
 **Context:** Multidisciplinary Project, MSc Computer Science and Engineering, Politecnico di Milano (A.Y. 2025-26). Advisor: Tommaso Spagnolo. Co-advisor: Prof. Cristina Silvano.
 
 > This repository is a fork of [gem5](https://github.com/gem5/gem5) v25.0. My work is in `src/softmax/` plus a few files of the simulator (listed below). Everything else is upstream gem5, under its BSD license (original README in `README.gem5.md`).
